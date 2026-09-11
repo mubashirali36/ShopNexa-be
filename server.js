@@ -38,6 +38,9 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: { message: "Too many requests, please try again later" },
 });
+app.get("/", (req, res) => {
+  res.send("Server is running");
+});
 app.use("/api", limiter);
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
@@ -57,6 +60,3 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
