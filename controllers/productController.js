@@ -1,8 +1,6 @@
 const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
-// @desc Get all products (supports search, category filter, pagination)
-// @route GET /api/products
 const getProducts = async (req, res, next) => {
   try {
     const { search, category, page = 1, limit = 20, sort } = req.query;
@@ -37,8 +35,6 @@ const getProducts = async (req, res, next) => {
   }
 };
 
-// @desc Get single product
-// @route GET /api/products/:id
 const getProductById = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id).populate("category", "name");
@@ -48,9 +44,6 @@ const getProductById = async (req, res, next) => {
     next(error);
   }
 };
-
-// @desc Create product (admin)
-// @route POST /api/products
 const createProduct = async (req, res, next) => {
   try {
     const { name, description, category, price, stock } = req.body;
@@ -83,8 +76,6 @@ const createProduct = async (req, res, next) => {
   }
 };
 
-// @desc Update product (admin)
-// @route PUT /api/products/:id
 const updateProduct = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -99,7 +90,7 @@ const updateProduct = async (req, res, next) => {
     if (stock !== undefined) product.stock = Number(stock);
 
     if (req.file) {
-      // Remove old image from Cloudinary
+
       if (product.image?.publicId) {
         await cloudinary.uploader.destroy(product.image.publicId).catch(() => {});
       }
@@ -114,9 +105,6 @@ const updateProduct = async (req, res, next) => {
     next(error);
   }
 };
-
-// @desc Delete product (admin)
-// @route DELETE /api/products/:id
 const deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id);

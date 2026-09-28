@@ -1,9 +1,6 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
-
-// @desc Place a new order
-// @route POST /api/orders
 const placeOrder = async (req, res, next) => {
   try {
     const { fullName, email, phone, shippingAddress, city, postalCode, orderNotes, paymentMethod, paymentDetails } = req.body;
@@ -21,8 +18,6 @@ const placeOrder = async (req, res, next) => {
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: "Your cart is empty" });
     }
-
-    // Verify stock for every item first
     for (const item of cart.items) {
       const product = item.product;
       if (!product) {
@@ -58,12 +53,11 @@ const placeOrder = async (req, res, next) => {
       paymentDetails: paymentDetails || "",
     });
 
-    // Decrease stock
+  
     for (const item of cart.items) {
       await Product.findByIdAndUpdate(item.product._id, { $inc: { stock: -item.quantity } });
     }
 
-    // Clear cart
     cart.items = [];
     await cart.save();
 
@@ -73,8 +67,6 @@ const placeOrder = async (req, res, next) => {
   }
 };
 
-// @desc Get logged-in user's orders
-// @route GET /api/orders/my
 const getMyOrders = async (req, res, next) => {
   try {
     const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
@@ -83,9 +75,6 @@ const getMyOrders = async (req, res, next) => {
     next(error);
   }
 };
-
-// @desc Get all orders (admin)
-// @route GET /api/orders
 const getAllOrders = async (req, res, next) => {
   try {
     const orders = await Order.find().populate("user", "name email").sort({ createdAt: -1 });
@@ -95,8 +84,7 @@ const getAllOrders = async (req, res, next) => {
   }
 };
 
-// @desc Get single order (owner or admin)
-// @route GET /api/orders/:id
+
 const getOrderById = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id).populate("user", "name email");
@@ -113,8 +101,6 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
-// @desc Update order status (admin)
-// @route PUT /api/orders/:id/status
 const updateOrderStatus = async (req, res, next) => {
   try {
     const { status } = req.body;

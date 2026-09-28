@@ -8,9 +8,6 @@ const getOrCreateCart = async (userId) => {
   }
   return cart;
 };
-
-// @desc Get logged-in user's cart
-// @route GET /api/cart
 const getCart = async (req, res, next) => {
   try {
     const cart = await getOrCreateCart(req.user._id);
@@ -20,9 +17,6 @@ const getCart = async (req, res, next) => {
     next(error);
   }
 };
-
-// @desc Add product to cart
-// @route POST /api/cart
 const addToCart = async (req, res, next) => {
   try {
     const { productId, quantity = 1 } = req.body;
@@ -53,8 +47,6 @@ const addToCart = async (req, res, next) => {
   }
 };
 
-// @desc Update cart item quantity
-// @route PUT /api/cart/:id
 const updateCartItem = async (req, res, next) => {
   try {
     const { quantity } = req.body;
@@ -81,8 +73,6 @@ const updateCartItem = async (req, res, next) => {
   }
 };
 
-// @desc Remove item from cart
-// @route DELETE /api/cart/:id
 const removeCartItem = async (req, res, next) => {
   try {
     const cart = await Cart.findOne({ user: req.user._id });

@@ -2,9 +2,6 @@ const validator = require("validator");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-
-// @desc Get all users (admin)
-// @route GET /api/users
 const getUsers = async (req, res, next) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
@@ -14,8 +11,6 @@ const getUsers = async (req, res, next) => {
   }
 };
 
-// @desc Get single user (admin)
-// @route GET /api/users/:id
 const getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -26,8 +21,6 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-// @desc Update user - own profile or admin (role change)
-// @route PUT /api/users/:id
 const updateUser = async (req, res, next) => {
   try {
     const isSelf = req.user._id.toString() === req.params.id;
@@ -56,8 +49,6 @@ const updateUser = async (req, res, next) => {
       }
       user.password = password;
     }
-
-    // Only admin can change roles, and not on themselves to avoid lockout
     if (role && isAdmin) {
       user.role = role;
     }
@@ -76,8 +67,6 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-// @desc Delete user (admin)
-// @route DELETE /api/users/:id
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -94,8 +83,6 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-// @desc Get admin dashboard stats
-// @route GET /api/admin/stats
 const getAdminStats = async (req, res, next) => {
   try {
     const [totalUsers, totalCustomers, totalAdmins, totalProducts, totalOrders, orders, recentOrders, recentUsers] =

@@ -1,9 +1,6 @@
 const validator = require("validator");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
-
-// @desc Register new user
-// @route POST /api/auth/register
 const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -40,8 +37,6 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// @desc Login user
-// @route POST /api/auth/login
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -69,8 +64,6 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-// @desc Logout user
-// @route POST /api/auth/logout
 const logoutUser = (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
@@ -79,8 +72,6 @@ const logoutUser = (req, res) => {
   res.json({ message: "Logged out successfully" });
 };
 
-// @desc Get current logged-in user
-// @route GET /api/auth/me
 const getMe = async (req, res, next) => {
   try {
     res.json({

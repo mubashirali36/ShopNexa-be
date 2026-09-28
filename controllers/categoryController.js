@@ -1,8 +1,5 @@
 const Category = require("../models/Category");
 const Product = require("../models/Product");
-
-// @desc Get all categories
-// @route GET /api/categories
 const getCategories = async (req, res, next) => {
   try {
     const categories = await Category.find().sort({ name: 1 });
@@ -12,8 +9,6 @@ const getCategories = async (req, res, next) => {
   }
 };
 
-// @desc Create category (admin)
-// @route POST /api/categories
 const createCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
@@ -29,8 +24,6 @@ const createCategory = async (req, res, next) => {
   }
 };
 
-// @desc Update category (admin)
-// @route PUT /api/categories/:id
 const updateCategory = async (req, res, next) => {
   try {
     const category = await Category.findById(req.params.id);
@@ -44,8 +37,6 @@ const updateCategory = async (req, res, next) => {
   }
 };
 
-// @desc Delete category (admin)
-// @route DELETE /api/categories/:id
 const deleteCategory = async (req, res, next) => {
   try {
     const category = await Category.findById(req.params.id);

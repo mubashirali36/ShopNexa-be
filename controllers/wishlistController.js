@@ -9,8 +9,6 @@ const getOrCreateWishlist = async (userId) => {
   return wishlist;
 };
 
-// @desc Get logged-in user's wishlist
-// @route GET /api/wishlist
 const getWishlist = async (req, res, next) => {
   try {
     const wishlist = await getOrCreateWishlist(req.user._id);
@@ -21,8 +19,6 @@ const getWishlist = async (req, res, next) => {
   }
 };
 
-// @desc Add product to wishlist
-// @route POST /api/wishlist
 const addToWishlist = async (req, res, next) => {
   try {
     const { productId } = req.body;
@@ -44,8 +40,6 @@ const addToWishlist = async (req, res, next) => {
   }
 };
 
-// @desc Remove product from wishlist
-// @route DELETE /api/wishlist/:id
 const removeFromWishlist = async (req, res, next) => {
   try {
     const wishlist = await getOrCreateWishlist(req.user._id);
