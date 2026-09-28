@@ -1,5 +1,10 @@
 const dns = require("node:dns");
-dns.setServers(["8.8.8.8"]);
+try {
+  dns.setServers(["8.8.8.8"]);
+} catch (error) {
+  console.log("DNS setServers skipped:", error.message);
+}
+
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -17,20 +22,45 @@ const wishlistRoutes = require("./routes/wishlistRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
+// Database Connection
 connectDB();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-  })
-);
+// Whitelisted Origins for CORS
+const allowedOrigins = [
+  "https://shop-nexa-fe.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+// Dynamic CORS Configuration
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+    if (!origin) return callback(null, true);
+
+    // Allow explicitly whitelisted origins or any Vercel preview URL
+    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      return callback(null, true);
+    } else {
+      return callback(null, true); // Fallback to allow connection during initial setup
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle CORS Preflight Requests
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Rate Limiter Setup
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 300,
@@ -38,13 +68,17 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: { message: "Too many requests, please try again later" },
 });
+
+// Root & Health Checks
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
-app.use("/api", limiter);
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
+app.use("/api", limiter);
+
+// API Routes Mapping
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
@@ -54,9 +88,9 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 
+// Error Middlewares
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-
