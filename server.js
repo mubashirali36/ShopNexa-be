@@ -38,14 +38,13 @@ const allowedOrigins = [
 // Dynamic CORS Configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+    // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
 
-    // Allow explicitly whitelisted origins or any Vercel preview URL
     if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       return callback(null, true);
     } else {
-      return callback(null, true); // Fallback to allow connection during initial setup
+      return callback(null, true);
     }
   },
   credentials: true,
@@ -53,8 +52,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 };
 
+// Express CORS Middleware
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle CORS Preflight Requests
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
